@@ -57,8 +57,11 @@ const MobileNav = ({ user }: MobileNavProps) => {
                                         </>
                                     )
                                 })}
+                                {/* USER */}
                             </nav>
                         </SheetClose>
+
+                        {/* Footer */}
                     </div>
                 </SheetContent>
             </Sheet>
