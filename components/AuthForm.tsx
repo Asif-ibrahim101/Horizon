@@ -23,15 +23,19 @@ import Image from 'next/image'
 import { z } from "zod"
 import { authformSchema } from '@/lib/utils'
 import { Loader2 } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 
 const AuthForm = ({ type }: { type: string }) => {
+    const router = useRouter();
     const [user, setUser] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
 
+    const fontSchema = authformSchema(type);
+
     // 1. Define your form.
-    const form = useForm<z.infer<typeof authformSchema>>({
-        resolver: zodResolver(authformSchema),
+    const form = useForm<z.infer<typeof fontSchema>>({
+        resolver: zodResolver(fontSchema),
         defaultValues: {
             email: "",
             password: ""
@@ -39,13 +43,34 @@ const AuthForm = ({ type }: { type: string }) => {
     });
 
     // 2. Define a submit handler.
-    function onSubmit(values: z.infer<typeof authformSchema>) {
-        // Do something with the form values.
-        // ✅ This will be type-safe and validated.
+    const onSubmit = async (data: z.infer<typeof fontSchema>) => {
 
         setIsLoading(true);
-        console.log(values)
         setIsLoading(false);
+
+        try {
+
+            if (type === 'sign-up') {
+                // const newUser = await SignUp(data)
+                // setUser(newUser
+            }
+
+            if (type === 'sign-in') {
+                // const response = await SignIn({
+                //     email: data.email,
+                //     password: data.password
+                // }
+
+                // if(response) {
+                //     router.push('/')
+                // }
+            }
+
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setIsLoading(false);
+        }
     }
 
     return (
@@ -60,7 +85,7 @@ const AuthForm = ({ type }: { type: string }) => {
                     <div className="flex flex-col gap-1 md:gap-3">
                         <h1
                             className='text-24 lg:text-36 font-semibold text-gray-900'
-                        >{user ? 'Link Account' : type === 'sign-in' ? 'Sign In' : 'Sign Out'}
+                        >{user ? 'Link Account' : type === 'sign-in' ? 'Sign In' : 'Sign Up'}
                         </h1>
 
                         <p className="text-16 font-normal text-gray-600">
@@ -76,6 +101,27 @@ const AuthForm = ({ type }: { type: string }) => {
                 ) : (
                     <>
                         <Form {...form}>
+                            {
+                                type === 'sign-up' && (
+                                    <>
+                                        <div className='flex gap-4'>
+                                            <CustomInputs control={form.control} name='FirstName' label='First Name' placeholder='enter your first name' />
+                                            <CustomInputs control={form.control} name='LastName' label='Last Name' placeholder='enter your lasy name' />
+                                        </div>
+                                        <CustomInputs control={form.control} name='address1' label='Address' placeholder='enter your specific address' />
+                                        <CustomInputs control={form.control} name='City' label='City' placeholder='enter your city' />
+                                        <div className='flex gap-4'>
+                                            <CustomInputs control={form.control} name='State' label='State' placeholder='Example: LON' />
+                                            <CustomInputs control={form.control} name='postalCode' label='Post Code' placeholder='Example: PR1 4NQ' />
+                                        </div>
+
+                                        <div className="flex gap-4">
+                                            <CustomInputs control={form.control} name='dateOfBirth' label='Date of Birth' placeholder='YYYY-MM-DD' />
+                                            <CustomInputs control={form.control} name='SSN' label='SSN' placeholder='1234' />
+                                        </div>
+                                    </>
+                                )
+                            }
                             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                                 <CustomInputs control={form.control} name='email' label='Email' placeholder='enter your email' />
                                 <CustomInputs control={form.control} name='password' label='Password' placeholder='enter your password' />
@@ -95,12 +141,12 @@ const AuthForm = ({ type }: { type: string }) => {
 
                         <footer className='flex justify-center gap-1'>
                             <p
-                            className='text-14 font-normal text-gray-600' 
+                                className='text-14 font-normal text-gray-600'
                             >{type === 'sign-in' ? 'Dont have an account?' : 'Already have an account? '}</p>
-                            <Link 
-                            className='form-link'
-                            href={type === 'sign-in' ? '/sign-up' : '/sign-in'}>
-                                    {type === 'sign-in' ? 'Sign up' : 'Sign in'}
+                            <Link
+                                className='form-link'
+                                href={type === 'sign-in' ? '/sign-up' : '/sign-in'}>
+                                {type === 'sign-in' ? 'Sign up' : 'Sign in'}
                             </Link>
                         </footer>
                     </>
